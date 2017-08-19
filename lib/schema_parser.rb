@@ -20,26 +20,8 @@ module SchemaParser
       @edges = {}
     end
 
-    def split_into_nodes
-      @nodes = File.open(@source, 'r') { |file| file.readlines }
-      .reject{ |line| line.match(/^$/) }
-      .join()
-      .split("--------------------------------------------------")
-      .map do |b|
-        sources = b.lines.reject{|line| line == "\n"}
-        name = sources.first.gsub("\n",'')
-        attrs = sources[2..-1].map { |e| e.split(' ')
-        .join(':') }
-        .reject{ |s| s.include? "created_at" }
-        .reject{ |s| s.include? "updated_at"}
-        .reject{ |s| s == "id:int(11)"}
-        .concat ["#{name.underscore}_id:int(11)"]
-        .uniq
-        SchemaNode.new(name, attrs)
-      end
-    end
-
     def draw
+      split_into_nodes
       File.open(@target, 'w+') do |writeable|
         writeable.write("digraph g {\n")
         writeable.write("node [shape=record,color=Red,fontname=Courier];\n")
@@ -61,5 +43,31 @@ module SchemaParser
         writeable.write("}\n")
       end
     end
+
+    private
+    def split_into_nodes
+      begin
+        @nodes = File.open(@source, 'r') { |file| file.readlines }
+        .reject{ |line| line.match(/^$/) }
+        .join()
+        .split("--------------------------------------------------")
+        .map do |b|
+          sources = b.lines.reject{|line| line == "\n"}
+          name = sources.first.gsub("\n",'')
+          attrs = sources[2..-1].map { |e| e.split(' ')
+          .join(':') }
+          .reject{ |s| s.include? "created_at" }
+          .reject{ |s| s.include? "updated_at"}
+          .reject{ |s| s == "id:int(11)"}
+          .concat ["#{name.underscore}_id:int(11)"]
+          .uniq
+          SchemaNode.new(name, attrs)
+        end
+      rescue Exception => e
+        puts 'Parse Error!'
+        @nodes = []
+      end
+    end
+
   end
 end
