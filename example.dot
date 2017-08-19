@@ -1,0 +1,17 @@
+digraph g {
+node [shape=record,color=Red,fontname=Courier];
+edge [color=Blue]
+Club [label="Club|{name|address|expired_at|ecard|image_keys|portable|club_id}"];
+School [label="School|{name|address|ecard|expired_at|portable|school_id}"];
+Game [label="Game|{start_at|end_at|lat|lng|address|name|image_key|image_keys|game_id}"];
+ClubGame [label="ClubGame|{game_id|club_id|club_game_id}"];
+SchoolGame [label="SchoolGame|{game_id|school_id|school_game_id}"];
+ClubProfile [label="ClubProfile|{user_id|club_id|avatar_key|course_id|gender|birthday|point|ce|realname|club_profile_id}"];
+SchoolProfile [label="SchoolProfile|{user_id|avatar_key|classroom_id|gender|birthday|point|ce|realname|school_id|school_profile_id}"];
+Club -> ClubGame [dir="none"]
+Club -> ClubProfile [dir="none"]
+School -> SchoolGame [dir="none"]
+School -> SchoolProfile [dir="none"]
+Game -> ClubGame [dir="none"]
+Game -> SchoolGame [dir="none"]
+}
